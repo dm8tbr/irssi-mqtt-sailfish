@@ -6,7 +6,7 @@ Sailfish client for receiving (irssi) notifications over MQTT
 
 irssi-notification-client.py
 ----------------------------
-A quick proof of concept implementation in python. Needs python-mqtt.
+A quick proof of concept implementation in python. Needs python-mosquitto.
 Only shows pop up and puts the notification in memory, no audio or haptic feedback.
 
 To set up:
