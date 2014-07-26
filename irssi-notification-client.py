@@ -47,5 +47,5 @@ interface = dbus.Interface(object,'org.freedesktop.Notifications')
 
 while True:
         mqtt.loop()
-	time.sleep(1)
+	time.sleep(.1)
 
