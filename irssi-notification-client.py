@@ -2,6 +2,8 @@
 import sys
 import time
 import os
+import string
+import random
 import dbus
 import mosquitto
 
@@ -16,7 +18,7 @@ def on_log(mosq, obj, level, string):
     print(string)
 
 
-mqtt_name = "sailfish_iot"
+mqtt_name = "sailfish_iot_"+''.join(random.choice(string.ascii_lowercase + string.digits) for i in xrange(8))
 mqtt_server = "mqtt"
 mqtt_port = 1883
 mqtt_keepalive = 60
