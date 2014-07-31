@@ -13,7 +13,7 @@ def read_credentials_file(filename):
     return f.readline().strip(), f.readline().strip()
 
 mqtt_name = "sailfish_iot"
-mqtt_server = "devaamo.fi"
+mqtt_server = "mqtt"
 mqtt_port = 1883
 mqtt_keepalive = 60
 mqtt_credentials = os.path.expanduser("~/.mqtt_auth")
@@ -21,6 +21,7 @@ mqtt_user, mqtt_password = read_credentials_file(mqtt_credentials)
 mqtt = mosquitto.Mosquitto(mqtt_name)
 
 mqtt.username_pw_set(mqtt_user, mqtt_password)
+mqtt.reconnect_delay_set(1, 300, 'true')
 mqtt.connect(mqtt_server, mqtt_port, mqtt_keepalive)
 mqtt.subscribe("sailfish/tbr/irssi", 0)
 
