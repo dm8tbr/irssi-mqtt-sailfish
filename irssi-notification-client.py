@@ -51,7 +51,5 @@ object = bus.get_object('org.freedesktop.Notifications','/org/freedesktop/Notifi
 interface = dbus.Interface(object,'org.freedesktop.Notifications')
 
 
-while True:
-        mqtt.loop()
-	time.sleep(.1)
+mqtt.loop_forever()
 
