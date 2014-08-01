@@ -49,7 +49,8 @@ def on_message(mosq, obj, msg):
                  notification[0],
                  notification[1],
                  dbus.Array(["default", ""]),
-                 dbus.Dictionary({"x-nemo-preview-body": notification[1],
+                 dbus.Dictionary({"category":"x-nemo.messaging.irssi",
+                             "x-nemo-preview-body": notification[1],
                              "x-nemo-preview-summary": notification[0]},
                              signature='sv'),
                  0)
