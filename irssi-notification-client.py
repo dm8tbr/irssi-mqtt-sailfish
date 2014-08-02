@@ -5,7 +5,7 @@ import os
 import string
 import random
 import dbus
-import mosquitto
+import paho.mqtt.client as mqtt
 
 print "starting MQTT notification client!"
 print "Press CTRL + C to exit"
@@ -20,8 +20,8 @@ def on_log(mosq, obj, level, string):
 def on_connect(mosq, userdata, rc):
     if rc == 0:
         print("Connected to: "+mqtt_server)
-        mqtt.subscribe("sailfish/tbr/irssi/notifications", 2)
-        mqtt.publish("sailfish/tbr/irssi/receiver_state", "connected", 0, True)
+        mqttc.subscribe("sailfish/tbr/irssi/notifications", 2)
+        mqttc.publish("sailfish/tbr/irssi/receiver_state", "connected", 0, True)
     else:
         print("Connection failed with error code: "+str(rc))
 
@@ -31,14 +31,17 @@ mqtt_port = 1883
 mqtt_keepalive = 60
 mqtt_credentials = os.path.expanduser("~/.mqtt_auth")
 mqtt_user, mqtt_password = read_credentials_file(mqtt_credentials)
-mqtt = mosquitto.Mosquitto(mqtt_name)
+# Note: In case you are connecting to an older version of Mosquitto, you'll need to set this to mqtt.MQTTv31!
+mqttc = mqtt.Client(mqtt_name, False, None, mqtt.MQTTv311 )
 
-mqtt.username_pw_set(mqtt_user, mqtt_password)
-mqtt.on_log = on_log
-mqtt.on_connect = on_connect
-mqtt.will_set("sailfish/tbr/irssi/receiver_state", None, 0, True)
-mqtt.reconnect_delay_set(1, 300, True)
-mqtt.connect(mqtt_server, mqtt_port, mqtt_keepalive)
+mqttc.username_pw_set(mqtt_user, mqtt_password)
+mqttc.on_log = on_log
+mqttc.on_connect = on_connect
+# Note: getting this wrong will make your connection fail authentication!
+mqttc.will_set("sailfish/tbr/irssi/receiver_state", None, 0, True)
+# Setting reconnect delay is currently not supported by paho
+#mqttc.reconnect_delay_set(1, 300, True)
+mqttc.connect(mqtt_server, mqtt_port, mqtt_keepalive)
 
 def on_message(mosq, obj, msg):
     print("Message received on topic "+msg.topic+" with QoS "+str(msg.qos)+" and payload "+msg.payload)
@@ -62,5 +65,5 @@ object = bus.get_object('org.freedesktop.Notifications','/org/freedesktop/Notifi
 interface = dbus.Interface(object,'org.freedesktop.Notifications')
 
 
-mqtt.loop_forever()
+mqttc.loop_forever()
 
