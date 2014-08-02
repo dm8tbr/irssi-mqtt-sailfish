@@ -23,7 +23,7 @@ def on_connect(mosq, userdata, rc):
         mqtt.subscribe("sailfish/tbr/irssi/notifications", 2)
         mqtt.publish("sailfish/tbr/irssi/receiver_state", "connected", 0, True)
     else:
-        print("Connection failed with error code: "+rc)
+        print("Connection failed with error code: "+str(rc))
 
 mqtt_name = "sailfish_iot_"+''.join(random.choice(string.ascii_lowercase + string.digits) for i in xrange(8))
 mqtt_server = "mqtt"
