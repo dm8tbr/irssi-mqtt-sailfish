@@ -7,12 +7,22 @@ import random
 import dbus
 import paho.mqtt.client as mqtt
 
-print "starting MQTT notification client!"
-print "Press CTRL + C to exit"
-
 def read_credentials_file(filename):
     f = open(filename)
     return f.readline().strip(), f.readline().strip()
+
+mqtt_name = "sailfish_iot_"+''.join(random.choice(string.ascii_lowercase + string.digits) for i in xrange(8))
+mqtt_server = "devaamo.fi"
+mqtt_port = 1883
+mqtt_keepalive = 60
+# Note: getting the will wrong will make your connection fail authentication!
+mqtt_set_will = False
+mqtt_credentials = os.path.expanduser("~/.mqtt_auth")
+mqtt_user, mqtt_password = read_credentials_file(mqtt_credentials)
+mqtt_topic_base = "sailfish/"+mqtt_user+"/"
+
+print "starting MQTT notification client!"
+print "Press CTRL + C to exit"
 
 def on_log(mosq, obj, level, string):
     print(string)
@@ -20,25 +30,18 @@ def on_log(mosq, obj, level, string):
 def on_connect(mosq, userdata, rc):
     if rc == 0:
         print("Connected to: "+mqtt_server)
-        mqttc.subscribe("sailfish/irssi/notifications", 2)
-        mqttc.publish("sailfish/irssi/receiver_state", "connected", 0, True)
+        mqttc.subscribe(mqtt_topic_base+"irssi/notifications", 2)
+        mqttc.publish(mqtt_topic_base+"irssi/receiver_state", "connected", 0, True)
     else:
         print("Connection failed with error code: "+str(rc))
 
-mqtt_name = "sailfish_iot_"+''.join(random.choice(string.ascii_lowercase + string.digits) for i in xrange(8))
-mqtt_server = "localhost"
-mqtt_port = 1883
-mqtt_keepalive = 60
-#mqtt_credentials = os.path.expanduser("~/.mqtt_auth")
-#mqtt_user, mqtt_password = read_credentials_file(mqtt_credentials)
 # Note: In case you are connecting to an older version of Mosquitto, you'll need to set this to mqtt.MQTTv31!
 mqttc = mqtt.Client(mqtt_name, False, None, mqtt.MQTTv311 )
 
-#mqttc.username_pw_set(mqtt_user, mqtt_password)
+mqttc.username_pw_set(mqtt_user, mqtt_password)
 mqttc.on_log = on_log
 mqttc.on_connect = on_connect
-# Note: getting this wrong will make your connection fail authentication!
-mqttc.will_set("sailfish/irssi/receiver_state", None, 0, True)
+if mqtt_set_will: mqttc.will_set(mqtt_topic_base+"irssi/receiver_state", None, 0, True)
 # Setting reconnect delay is currently not supported by paho
 #mqttc.reconnect_delay_set(1, 300, True)
 mqttc.connect(mqtt_server, mqtt_port, mqtt_keepalive)
