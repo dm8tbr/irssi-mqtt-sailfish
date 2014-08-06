@@ -49,7 +49,8 @@ mqttc.connect(mqtt_server, mqtt_port, mqtt_keepalive)
 def on_message(mosq, obj, msg):
     print("Message received on topic "+msg.topic+" with QoS "+str(msg.qos)+" and payload "+msg.payload)
     notification = msg.payload.split('\n')
-    interface.Notify("irssi",
+    try:
+        interface.Notify("irssi",
                  0,
                  "icon-m-notifications",
                  notification[0],
@@ -60,6 +61,8 @@ def on_message(mosq, obj, msg):
                              "x-nemo-preview-summary": notification[0]},
                              signature='sv'),
                  0)
+    except dbus.exceptions.DBusException:
+        print("Failed sending DBus notification.")
 
 mqttc.on_message = on_message
 
