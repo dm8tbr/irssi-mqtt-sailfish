@@ -13,6 +13,6 @@ Only shows pop up and puts the notification in memory, no audio or haptic feedba
 
 To set up:
 echo #myusername# > ~/.mqtt_auth
-echo #password# > ~/.mqtt_auth
+echo #password# >> ~/.mqtt_auth
 
 Then edit the variables at the top of irssi-notification-client.py to match your environment.
