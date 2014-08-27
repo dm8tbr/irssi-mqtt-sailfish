@@ -12,7 +12,14 @@ Repositories etc are explained here: https://wiki.merproject.org/wiki/Middleware
 Only shows pop up and puts the notification in memory, no audio or haptic feedback.
 
 To set up:
+```
 echo #myusername# > ~/.mqtt_auth
 echo #password# >> ~/.mqtt_auth
+```
+
+Copy the notification definition into place (as root).
+```
+cp x-nemo.messaging.irssi.conf /usr/share/lipstick/notificationcategories/
+```
 
 Then edit the variables at the top of irssi-notification-client.py to match your environment.
